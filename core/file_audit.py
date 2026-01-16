@@ -12,24 +12,44 @@ class FileAudit():
                 raise FileNotFoundError(f'File not exists {file.name}')
 
 
-    def check_mode(self, mode):
+    def check_mode_valid(self, mode) -> bool:
         # Checking OCTAL mode
         try:
-            int(mode)
+            int(mode) # Checking if the number can be converted to an integer
         except ValueError:
            raise ValueError(f'The provided parameter cannot be converted to the int type {mode=}')
-        else:
-            return True
+        
+        if len(mode) > 4: # Checking if the number has the correct number of digits
+            raise ValueError(f'The provided mode cannot have more than 4 digits {mode=}')
+        elif len(mode) < 4:
+            raise ValueError(f'Please provide exactly 4 digits for the mode parameter {mode=}')
+
+        for number in mode: # Checking if the number is in octal format
+            if int(number) > 7 or int(number) < 0:
+                raise ValueError(f'The number provided is not valid for mode permission {number=}')
 
     
-    def check_permissions(self, mode: str) -> None:
+    def check_permissions(self, mode: str) -> list:
+        """
+        Verifies if the files have the expected permissions.
+
+        Args:
+            mode (str): The permissions in octal format (e.g., '0644', '755').
+                        Symbolic notation (e.g., 'rwxr-xr-x') is not supported.
+                        Must be a string of digits 0-7 and have a length of 4.
+
+        Returns:
+            list: A list of tuples containing the filename and its current permissions.
+        """
         # Checking if files exist
         self.file_exists()
         
         # Checking if file mode parameter is valid
-        self.check_mode(mode)
+        self.check_mode_valid(mode)
         
-        print(f'Checking permissions...')
+        list_of_files = []
         for file in self.files:
             file_permissions = oct(file.stat().st_mode)[-4:]
-            print(f'File permissions: {file.name} {file_permissions}')
+            list_of_files.append((file.name, file_permissions))
+
+        return list_of_files
