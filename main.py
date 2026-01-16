@@ -6,4 +6,4 @@ files_audit = [
 ]
 
 files = FileAudit(files_audit)
-files.check_permissions()
+files.check_permissions(mode='0600')

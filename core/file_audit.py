@@ -9,14 +9,27 @@ class FileAudit():
     def file_exists(self) -> bool:
         for file in self.files:
             if not file.is_file():
-                return False
+                raise FileNotFoundError(f'File not exists {file.name}')
 
-        return True
+
+    def check_mode(self, mode):
+        # Checking OCTAL mode
+        try:
+            int(mode)
+        except ValueError:
+           raise ValueError(f'The provided parameter cannot be converted to the int type {mode=}')
+        else:
+            return True
 
     
-    def check_permissions(self) -> None:
-        if not self.file_exists():
-            # TODO: Adjust to display the file name
-            raise FileNotFoundError(f'File not exists')
+    def check_permissions(self, mode: str) -> None:
+        # Checking if files exist
+        self.file_exists()
+        
+        # Checking if file mode parameter is valid
+        self.check_mode(mode)
         
         print(f'Checking permissions...')
+        for file in self.files:
+            file_permissions = oct(file.stat().st_mode)[-4:]
+            print(f'File permissions: {file.name} {file_permissions}')
