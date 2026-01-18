@@ -34,7 +34,7 @@ class FileAudit():
         Verifies if the files have the expected permissions.
 
         Args:
-            mode (str): The permissions in octal format (e.g., '0644', '755').
+            mode (str): The permissions in octal format (e.g., '0644', '0755').
                         Symbolic notation (e.g., 'rwxr-xr-x') is not supported.
                         Must be a string of digits 0-7 and have a length of 4.
 
@@ -47,9 +47,29 @@ class FileAudit():
         # Checking if file mode parameter is valid
         self.check_mode_valid(mode)
         
-        list_of_files = []
+        list_of_verified_files = []
         for file in self.files:
             file_permissions = oct(file.stat().st_mode)[-4:]
-            list_of_files.append((file.name, file_permissions))
+            if file_permissions == mode:
+                checked_file_boolean = True
+            else:
+                checked_file_boolean = False
 
-        return list_of_files
+            list_of_verified_files.append((checked_file_boolean, file.resolve(), file_permissions))
+
+        return list_of_verified_files
+
+
+    def change_permissions(self, mode: str, filepath: str) -> None:
+        """
+        Change the permissions of the files to the provided mode.
+
+        Args:
+            mode (str): The permissions in octal format (e.g., '0644', '0755').
+                        Symbolic notation (e.g., 'rwxr-xr-x') is not supported.
+                        Must be a string of digits 0-7 and have a length of 4.
+            
+            filepath (str): The path to the file.
+        """
+        print(f'Executing {filepath}')
+        
