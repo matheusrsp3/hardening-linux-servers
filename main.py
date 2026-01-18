@@ -3,7 +3,7 @@ from core.file_audit import FileAudit
 files_audit = [
     '/etc/passwd',
     '/etc/shadow',
-    '/home/mcarvalho/github/hardening-linux-servers/matheus.link',
+    'matheus.link',
 ]
 
 files = FileAudit(files_audit)
